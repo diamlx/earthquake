@@ -22,8 +22,18 @@ def calc(path):
     y_pred = rf.predict(X_test)
 
     # Evaluate the model's performance
-    print(X_test)
-    print(y_pred)
-    mse = mean_squared_error(y_test, y_pred)
-    print("Mean squared error:", mse)
 
+    mse = mean_squared_error(y_test, y_pred)
+    return mse, y_pred
+
+"""
+X = data.loc[:, ['latitude', 'longitude', 'depth']].values
+y = data['mag']
+
+neigh = KNeighborsRegressor(n_neighbors=3)
+neigh.fit(X_train, y_train)
+print(neigh.predict([[42.3331,144.5555,47.631]]))
+#print(neigh.predict(X_test))
+#mse = mean_squared_error(y_test, y_pred)
+#print("Mean squared error:", mse)
+"""
