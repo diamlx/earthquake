@@ -2,7 +2,7 @@ import sys
 from PyQt6.QtWidgets import QApplication, QWidget, QPushButton, QLineEdit, QFileDialog, QMessageBox
 from PyQt6.QtWidgets import QLabel, QVBoxLayout, QMainWindow, QTabWidget, QHBoxLayout, QSizePolicy
 from calc import calc
-import csv
+#import csv
 
 import folium
 from PyQt6.QtWidgets import QApplication, QWidget, QVBoxLayout
