@@ -1,16 +1,11 @@
 import sys
-from PyQt6.QtWidgets import QApplication, QWidget, QPushButton, QLineEdit, QFileDialog, QMessageBox
-from PyQt6.QtWidgets import QLabel, QVBoxLayout, QMainWindow, QTabWidget, QHBoxLayout, QSizePolicy
+import csv
+from PyQt6.QtWidgets import QApplication, QWidget, QPushButton, QLineEdit, QFileDialog, QMessageBox,QWidgetAction
+from PyQt6.QtWidgets import QLabel, QVBoxLayout, QMainWindow, QTabWidget, QHBoxLayout, QSizePolicy,QToolBar
+from PyQt6 import uic, QtCore, QtGui,QtWidgets
 from calc import calc
-#import csv
 
-import folium
-from PyQt6.QtWidgets import QApplication, QWidget, QVBoxLayout
-from PyQt6.QtWebEngineWidgets import QWebEngineView
-from PyQt6.QtCore import QUrl
-import pandas as pd
-
-
+"""
 class MyApp(QMainWindow):
     def __init__(self):
         super().__init__()
@@ -22,6 +17,8 @@ class MyApp(QMainWindow):
 
         self.tabs = QTabWidget(self)
         self.tabs.setGeometry(10, 10, 280, 180)
+        self.tabs.setMovable(True)
+
 
         # Создаем первую вкладку
         self.tab1 = QWidget()
@@ -40,7 +37,6 @@ class MyApp(QMainWindow):
         self.file_button.setGeometry(10, 50, 100, 30)
         self.file_button.clicked.connect(self.open_file_dialog)
         layout1.addWidget(self.file_button)
-
         # Добавляем кнопку "Рассчитать"
         self.calculate_button = QPushButton('Рассчитать', self)
         self.calculate_button.setGeometry(120, 50, 100, 30)
@@ -59,9 +55,6 @@ class MyApp(QMainWindow):
         layout2.addWidget(self.label2)
         self.tab2.setLayout(layout2)
 
-
-
-
     def open_file_dialog(self):
         # Открываем диалог выбора файла
         file_path, _ = QFileDialog.getOpenFileName(self, "Выберите файл")
@@ -71,7 +64,7 @@ class MyApp(QMainWindow):
 
     def calculate(self):
         # Получаем данные из поля ввода
-        input_data = self.input_field.text()
+        #input_data = self.input_field.text()
 
         # Рассчитываем результат
         result = self.path
@@ -85,7 +78,6 @@ class MyApp(QMainWindow):
         #with open('output.csv', 'w', newline='') as file:
             #writer = csv.writer(file)
             #writer.writerows(output_data)
-
 
     def closeEvent(self, event):
         # Создаем диалог подтверждения выхода из программы
@@ -102,44 +94,36 @@ class MyApp(QMainWindow):
 
 
 
-class MapWidget(QWidget):
-    def __init__(self, data):
-        super().__init__()
-
-        # Создаем карту
-        map = folium.Map(location=[30, 0], zoom_start=2)
-
-        # Добавляем маркеры на карту
-        for index, row in data.iterrows():
-            folium.Marker(location=[row['Широта'], row['Долгота']], popup=row['Город'] + ': ' + str(row['Значение'])).add_to(map)
-
-        # Сохраняем карту в виде HTML-страницы
-        map.save('map.html')
-
-        # Создаем виджет QWebEngineView и загружаем в него HTML-страницу с картой
-        self.web_view = QWebEngineView()
-        self.web_view.load(QUrl.fromLocalFile('/Users/themdq/Desktop/Diana/Журавлев/GUI/map.html'))
-
-        # Создаем вертикальный макет и добавляем в него виджет QWebEngineView
-        layout = QVBoxLayout()
-        layout.addWidget(self.web_view)
-
-        # Устанавливаем макет для виджета
-        self.setLayout(layout)
-
-# Создаем DataFrame с данными
-data = pd.DataFrame({
-    'Город': ['Москва', 'Пекин', 'Нью-Йорк'],
-    'Широта': [55.7558, 39.9042, 40.7128],
-    'Долгота': [37.6173, 116.4074, -74.0060],
-    'Значение': [10, 20, 30]
-})
-
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
-    ex = MapWidget(data)
+    #ex = MapWidget(data)
+    #ex.show()
     window = MyApp()
     window.show()
-    #ex.show()
     sys.exit(app.exec())
+"""
+class MainWindow(QtWidgets.QMainWindow):
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        uic.loadUi("/Users/themdq/Desktop/test.ui", self)
+        self.initUI()
+
+    def initUI(self):
+        self.setWindowTitle('Earthquake Prediction')  # название программы
+        self.actionOpen.triggered.connect(self.open_file_dialog)
+
+    def open_file_dialog(self):
+        # Открываем диалог выбора файла
+        file_path, _ = QFileDialog.getOpenFileName(self, "Выберите файл")
+        # Устанавливаем выбранный файл в поле ввода
+        self.path = file_path
+        print(self.path)
+        self.label.setText(self.path)
+        #self.input_field.setText(file_path)
+
+app = QtWidgets.QApplication(sys.argv)
+window = MainWindow()
+window.show()
+app.exec()
