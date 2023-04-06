@@ -5,6 +5,8 @@ from sklearn.metrics import mean_squared_error
 from sklearn.neighbors import KNeighborsRegressor
 from sklearn import tree
 import time
+import matplotlib.pyplot as plt
+
 
 def calc(path):
     data = pd.read_csv(path)
@@ -26,6 +28,14 @@ def calc(path):
     mse = mean_squared_error(y_test, y_pred)
     return mse, y_pred
 
+def data_plot(plot_type,path):
+    data = pd.read_csv(path)
+    if plot_type == 'Магнитуда':
+        return data['mag']
+    elif plot_type == 'Глубина':
+        return data['depth']
+    else:
+        return 'None'
 """
 X = data.loc[:, ['latitude', 'longitude', 'depth']].values
 y = data['mag']

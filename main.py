@@ -3,7 +3,11 @@ import csv
 from PyQt6.QtWidgets import QApplication, QWidget, QPushButton, QLineEdit, QFileDialog, QMessageBox,QWidgetAction
 from PyQt6.QtWidgets import QLabel, QVBoxLayout, QMainWindow, QTabWidget, QHBoxLayout, QSizePolicy,QToolBar
 from PyQt6 import uic, QtCore, QtGui,QtWidgets
-from calc import calc
+from calc.calc import data_plot, calc
+import matplotlib
+from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg, NavigationToolbar2QT
+from matplotlib.figure import Figure
+matplotlib.use('Qt5Agg')
 
 """
 class MyApp(QMainWindow):
@@ -103,25 +107,71 @@ if __name__ == '__main__':
     window.show()
     sys.exit(app.exec())
 """
+
+class MplCanvas(FigureCanvasQTAgg):
+    def __init__(self, parent=None, width=5, height=4, dpi=100):
+        fig = Figure(figsize=(width, height), dpi=dpi)
+        self.axes = fig.add_subplot(111)
+        super(MplCanvas, self).__init__(fig)
+
+class Window_2(QMainWindow):
+    def __init__(self, parent=None):
+        super().__init__(parent)
+        self.resize(200, 215)
+
 class MainWindow(QtWidgets.QMainWindow):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        uic.loadUi("/Users/themdq/Desktop/test.ui", self)
+        uic.loadUi("/Users/themdq/Desktop/Diana/Журавлев/test.ui", self)
+        self.path = ''
         self.initUI()
 
     def initUI(self):
         self.setWindowTitle('Earthquake Prediction')  # название программы
         self.actionOpen.triggered.connect(self.open_file_dialog)
+        self.buildPlot.pressed.connect(self.build_plot)
+
+
 
     def open_file_dialog(self):
         # Открываем диалог выбора файла
         file_path, _ = QFileDialog.getOpenFileName(self, "Выберите файл")
         # Устанавливаем выбранный файл в поле ввода
         self.path = file_path
-        print(self.path)
         self.label.setText(self.path)
         #self.input_field.setText(file_path)
+
+
+
+    def build_plot(self):
+        if self.path == '':
+            self.show_warning()
+            return
+        plot_type = self.plotCombo.currentText()
+        data = data_plot(plot_type, self.path)
+        sc = MplCanvas(self, width=5, height=4, dpi=100)
+        sc.axes.plot(data)
+        toolbar = NavigationToolbar2QT(sc, self)
+        self.window = Window_2(self)
+        self.window.layout = QtWidgets.QVBoxLayout()
+        self.window.layout.addWidget(toolbar)
+        self.window.layout.addWidget(sc)
+        self.window.widget = QtWidgets.QWidget()
+        self.window.widget.setLayout(self.window.layout)
+        self.window.setCentralWidget(self.window.widget)
+        self.window.setWindowTitle(plot_type)
+        self.window.show()
+
+    def show_warning(self):
+        msg = QMessageBox()
+        msg.setWindowTitle("Файл не выбран")
+        msg.setText("Файл не выбран! Выберите файл при помощи меню.")
+        msg.setIcon(QMessageBox.Icon.Warning)
+        msg.exec()
+
+
+
 
 app = QtWidgets.QApplication(sys.argv)
 window = MainWindow()
