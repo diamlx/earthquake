@@ -8,25 +8,26 @@ import time
 import matplotlib.pyplot as plt
 
 
-def calc(path):
+def calc(path, percent):
     data = pd.read_csv(path)
     features = ["latitude", "longitude", "depth", ]
     X = data[features]
     y = data["mag"]
-    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+    percent = percent/100
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=percent, random_state=42)
 
     # Train a random forest regression model
-    rf = RandomForestRegressor(n_estimators=100, random_state=42)
-    rf.fit(X_train, y_train)
+    neigh = KNeighborsRegressor(n_neighbors=3)
+    neigh.fit(X_train, y_train)
 
     # Make predictions on the test set
     # X_test.loc[:, "time"] = pd.to_datetime(X_test["time"]).apply(lambda x: int(time.mktime(x.timetuple())))
-    y_pred = rf.predict(X_test)
+    y_pred = neigh.predict(X_test)
 
     # Evaluate the model's performance
 
     mse = mean_squared_error(y_test, y_pred)
-    return mse, y_pred
+    return mse, y_pred, neigh
 
 def data_plot(plot_type,path):
     data = pd.read_csv(path)
@@ -36,6 +37,11 @@ def data_plot(plot_type,path):
         return data['depth']
     else:
         return 'None'
+
+
+def pred(lat,long,depth,neigh):
+    res = neigh.predict([[lat,long,depth]])
+    return res
 """
 X = data.loc[:, ['latitude', 'longitude', 'depth']].values
 y = data['mag']
